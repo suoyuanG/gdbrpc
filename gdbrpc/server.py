@@ -72,12 +72,23 @@ class Server:
         self._logger = logging.getLogger(__name__)
         if not self._logger.hasHandlers():
             self._logger.setLevel(logLevel)
+
             timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
             pid = os.getpid()
-            handler = logging.FileHandler(f"gdbrpc_server-{timestamp}-pid{pid}.log")
+
             formatter = logging.Formatter("%(asctime)s gdbrpc_server: %(message)s")
-            handler.setFormatter(formatter)
-            self._logger.addHandler(handler)
+
+            file_handler = logging.FileHandler(
+                f"gdbrpc_server-{timestamp}-pid{pid}.log"
+            )
+            file_handler.setFormatter(formatter)
+
+            terminal_handler = logging.StreamHandler()
+            terminal_handler.setFormatter(formatter)
+            terminal_handler.setLevel(logging.ERROR)
+
+            self._logger.addHandler(file_handler)
+            self._logger.addHandler(terminal_handler)
 
     def start(self):
         try:
