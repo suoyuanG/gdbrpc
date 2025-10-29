@@ -28,14 +28,14 @@ __all__ = [
     "PostRequest",
     "Request",
     "Response",
-    "ResponseStatus",
+    "PacketStatus",
     "Server",
     "ShellExec",
 ]
 
 # Client must be imported first because ClientCLI depends on it
 from .client import Client
-from .utils import PostRequest, Request, Response, ResponseStatus, ShellExec
+from .utils import PacketStatus, PostRequest, Request, Response, ShellExec
 
 if importlib.util.find_spec("gdb") is not None:
     from .server import Server  # noqa: F401

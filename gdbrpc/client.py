@@ -32,10 +32,10 @@ from typing import Dict, Optional, Tuple
 import cloudpickle as pickle
 from gdbrpc.utils import (
     DEFAULT_TIMEOUT,
+    PacketStatus,
     PostRequest,
     Request,
     Response,
-    ResponseStatus,
     socket_recv,
     socket_send,
 )
@@ -79,7 +79,7 @@ class Client:
     def _listen_responses(self, socket: socket.socket):
         try:
             while self._connected:
-                data: Tuple[Response, ResponseStatus] = pickle.loads(
+                data: Tuple[Response, PacketStatus] = pickle.loads(
                     socket_recv(socket, self._logger)
                 )
                 response, status = data
@@ -87,11 +87,11 @@ class Client:
                     f"Received response for request ID {response.tag}, current queue: {self._pending_requests}"
                 )
 
-                if status == ResponseStatus.PYTHON_VERSION_MISMATCH:
+                if status == PacketStatus.PYTHON_VERSION_MISMATCH:
                     response.payload += f"\nclient python version: {sys.version}"
                     self._response.put(response.payload)
                 elif (
-                    status == ResponseStatus.HAS_CALLBACK
+                    status == PacketStatus.HAS_CALLBACK
                     and response.tag in self._pending_requests
                 ):
                     self._logger.debug(f"Handling callback for request ID {status}")
@@ -152,10 +152,10 @@ class Client:
         if post_request is not None:
             self._logger.debug(f"Registering callback for request ID {request.tag}")
             self._pending_requests[request.tag] = post_request
-            payload = (request, ResponseStatus.HAS_CALLBACK)
+            payload = (request, PacketStatus.HAS_CALLBACK)
         else:
             self._logger.debug(f"No callback for request ID {request.tag}")
-            payload = (request, ResponseStatus.NO_CALLBACK)
+            payload = (request, PacketStatus.NO_CALLBACK)
 
         self._logger.debug(f"Sending request: {request} to {self._host}:{self._port}")
 

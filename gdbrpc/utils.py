@@ -75,7 +75,7 @@ def socket_send(connection: socket.socket, data: bytes, logger: logging.Logger) 
         raise
 
 
-class ResponseStatus(IntEnum):
+class PacketStatus(IntEnum):
     HAS_CALLBACK = 0
     NO_CALLBACK = 1
     PYTHON_VERSION_MISMATCH = 2

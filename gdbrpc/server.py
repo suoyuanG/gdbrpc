@@ -34,9 +34,9 @@ import cloudpickle as pickle
 import gdb
 from gdbrpc.utils import (
     DEFAULT_TIMEOUT,
+    PacketStatus,
     Request,
     Response,
-    ResponseStatus,
     socket_recv,
     socket_send,
 )
@@ -146,10 +146,9 @@ class Server:
                     self._logger.error(f"Error accepting connection: {e}")
 
     def _process_requests_core(
-        self, client: socket.socket, request: Request, request_tag: int
+        self, client: socket.socket, request: Request, status: PacketStatus
     ) -> None:
         try:
-            has_callback = request_tag != ResponseStatus.NO_CALLBACK
             async_exec = AsyncExec(request)
 
             # https://sourceware.org/gdb/current/onlinedocs/gdb.html/Threading-in-GDB.html
@@ -157,24 +156,24 @@ class Server:
             # gdb.post_event provides an ability to run any callable objects in the gdb main thread.
             gdb.post_event(async_exec)
 
-            if not has_callback:
+            if status == PacketStatus.HAS_CALLBACK:
                 self._logger.debug(
-                    f"Posted event with {request}, waiting for completion"
+                    f"Posted event for callback {status} with {request}, waiting for completion"
                 )
             else:
                 self._logger.debug(
-                    f"Posted event for callback {request_tag} with {request}, waiting for completion"
+                    f"Posted event with {request}, waiting for completion"
                 )
 
             # If the request does not has callback, we should send message to client immediately.
             # Because the client call must be not blocked.
-            if has_callback:
+            if status == PacketStatus.HAS_CALLBACK:
                 socket_send(
                     client,
                     pickle.dumps(
                         (
-                            Response(request_tag, request_tag),
-                            ResponseStatus.NO_CALLBACK,
+                            Response(request.tag, request.tag),
+                            PacketStatus.NO_CALLBACK,
                         )
                     ),
                     self._logger,
@@ -185,35 +184,27 @@ class Server:
             if isinstance(message, Exception):
                 message = f"Error: {str(message)}"
 
-            if not has_callback:
-                self._logger.debug(f"{request} completed")
-                socket_send(
-                    client,
-                    pickle.dumps(
-                        (Response(request_tag, message), ResponseStatus.NO_CALLBACK)
-                    ),
-                    self._logger,
-                )
+            if status == PacketStatus.HAS_CALLBACK:
+                self._logger.debug(f"Callback {status} with {request} completed")
             else:
-                self._logger.debug(f"Callback {request_tag} with {request} completed")
-                socket_send(
-                    client,
-                    pickle.dumps(
-                        (Response(request_tag, message), ResponseStatus.HAS_CALLBACK)
-                    ),
-                    self._logger,
-                )
+                self._logger.debug(f"{request} completed")
+
+            socket_send(
+                client,
+                pickle.dumps((Response(request.tag, message), status)),
+                self._logger,
+            )
 
         except Exception as e:
             traceback.print_exc()
-            self._logger.error(f"Error running callback {request_tag}: {e}")
+            self._logger.error(f"Error running callback {status}: {e}")
 
     def _process_requests(self, client: socket.socket, address):
         while self.running:
             try:
                 try:
                     data_bytes = socket_recv(client, self._logger)
-                    payload: Tuple[Request, ResponseStatus] = pickle.loads(data_bytes)
+                    payload: Tuple[Request, PacketStatus] = pickle.loads(data_bytes)
                 except (TypeError, ValueError) as e:
                     # cloudpickle needs the same Python version to serialize/deserialize the object.
                     #
@@ -231,7 +222,7 @@ class Server:
                         f"server python version: {sys.version}"
                     )
                     response = pickle.dumps(
-                        (Response(0, message), ResponseStatus.PYTHON_VERSION_MISMATCH)
+                        (Response(0, message), PacketStatus.PYTHON_VERSION_MISMATCH)
                     )
                     socket_send(client, response, self._logger)
                     continue
@@ -240,14 +231,9 @@ class Server:
                 self._logger.info(f"Received request from {address}: {request}")
                 assert isinstance(request, Request)
 
-                if status == ResponseStatus.NO_CALLBACK:
-                    request_tag = ResponseStatus.NO_CALLBACK
-                else:
-                    request_tag = request.tag
-
                 gdb.Thread(
                     target=self._process_requests_core,
-                    args=(client, request, request_tag),
+                    args=(client, request, status),
                     daemon=True,
                 ).start()
 
