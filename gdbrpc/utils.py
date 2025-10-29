@@ -24,6 +24,7 @@ import logging
 import queue
 import socket
 import struct
+import subprocess
 import threading
 from enum import IntEnum
 from typing import Any
@@ -107,13 +108,61 @@ class PostRequest(Request):
 class ShellExec(Request):
     def __init__(self, command: str):
         super().__init__()
+
+        self.is_gdb_command = True
+        command = command.strip()
+
+        if command.startswith("!"):
+            command = command[1:].strip()
+            self.is_gdb_command = False
+        elif command.startswith("shell"):
+            command = command[5:].strip()
+            self.is_gdb_command = False
+
         self.command = command
+
+    def _run_shell_command(self, command) -> str:
+        try:
+            process = subprocess.Popen(
+                command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                bufsize=1,
+                universal_newlines=True,
+            )
+
+            result = ""
+
+            while True:
+
+                stdout_line = process.stdout.readline()
+                stderr_line = process.stderr.readline()
+
+                if stdout_line:
+                    result += f"{stdout_line}"
+                if stderr_line:
+                    result += f"{stderr_line}"
+
+                if (
+                    stdout_line == ""
+                    and stderr_line == ""
+                    and process.poll() is not None
+                ):
+                    break
+
+            return result
+        except Exception as e:
+            return f"Error executing command '{command}': {e}"
 
     def __call__(self, queue: queue.Queue):
         import gdb
 
         try:
-            out = gdb.execute(f"{self.command}", to_string=True)
+            if self.is_gdb_command:
+                out = gdb.execute(f"{self.command}", to_string=True)
+            else:
+                out = self._run_shell_command(self.command.split())
         except Exception as e:
             out = e
         queue.put(out)
