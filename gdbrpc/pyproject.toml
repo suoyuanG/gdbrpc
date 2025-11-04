@@ -5,16 +5,22 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "gdbrpc"
 version = "0.0.1"
-description = "gdb RPC for Debugging NuttX"
+dependencies = ["cloudpickle>=0.0.0"]
 requires-python = ">=3.10"
+maintainers = [
+    { name = "suoyuan", email = "s5n666@outlook.com" },
+    { name = "Neo Xu", email = "neo.xu1990@gmail.com" }
+]
+description = "A Python RPC framework for controlling GDB remotely - enables programmatic debugging automation, remote command execution, and interactive CLI for any GDB-compatible debugger"
+readme = "README.md"
+keywords = ["gdb", "remote", "rpc", "debugger", "debugging", "automation", "NuttX", "embedded"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "License :: OSI Approved :: Apache Software License",
 ]
 
-dependencies = ["cloudpickle>=0.0.0"]
-
 [tool.setuptools]
 package-dir = { "gdbrpc" = "." }
+
 
