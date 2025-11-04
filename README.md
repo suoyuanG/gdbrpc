@@ -331,4 +331,5 @@ For questions and support:
 
 ---
 
-**Note**: While gdbrpc was originally developed as part of the NuttX RTOS debugging tools, it is a standalone, general-purpose library that can be used with any GDB debugging session.
+> [!NOTE]
+> While gdbrpc was originally developed as part of the NuttX RTOS debugging tools, it is a standalone, general-purpose library that can be used with any GDB debugging session.
