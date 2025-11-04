@@ -1,4 +1,4 @@
-dist/
+gdbrpc/dist/
 *.egg-info/
 *.egg-info/
 *.log
