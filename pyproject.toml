@@ -13,6 +13,7 @@ maintainers = [
 ]
 description = "A Python RPC framework for controlling GDB remotely - enables programmatic debugging automation, remote command execution, and interactive CLI for any GDB-compatible debugger"
 readme = "README.md"
+license = { file = "LICENSE" }
 keywords = ["gdb", "remote", "rpc", "debugger", "debugging", "automation", "NuttX", "embedded"]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -23,4 +24,6 @@ classifiers = [
 [tool.setuptools]
 package-dir = { "gdbrpc" = "gdbrpc" }
 
-
+[project.urls]
+Homepage = "https://github.com/suoyuanG/gdbrpc"
+Issues = "https://github.com/suoyuanG/gdbrpc/issues"
