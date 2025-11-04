@@ -38,6 +38,29 @@ from .client import Client
 from .utils import PacketStatus, PostRequest, Request, Response, ShellExec
 
 if importlib.util.find_spec("gdb") is not None:
-    from .server import Server  # noqa: F401
+    # Register the commands
+    # from .server import Server
+    import gdb
+
+    from .commands import (  # noqa: F401
+        SocketServerStatus,
+        StartSocketClient,
+        StartSocketServer,
+        StopSocketServer,
+    )
+
+    class GDBRpcPrefix(gdb.Command):
+        """GDB Remote Protocol related commands prefix"""
+
+        def __init__(self):
+            super().__init__("gdbrpc", gdb.COMMAND_USER, prefix=True)
+
+    print("Registering gdbrpc commands...")
+    GDBRpcPrefix()
+    StartSocketServer()
+    StopSocketServer()
+    SocketServerStatus()
+    StartSocketClient()
+
 
 from .cli import ClientCLI
