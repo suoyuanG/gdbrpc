@@ -21,6 +21,6 @@ classifiers = [
 ]
 
 [tool.setuptools]
-package-dir = { "gdbrpc" = "." }
+package-dir = { "gdbrpc" = "gdbrpc" }
 
 
