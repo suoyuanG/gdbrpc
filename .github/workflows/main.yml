@@ -31,6 +31,8 @@ jobs:
           python -m build
 
       - name: Publish package to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.8.0
-        with:
-          password: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          python -m twine upload dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
