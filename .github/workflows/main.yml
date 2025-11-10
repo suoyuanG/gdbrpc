@@ -2,11 +2,10 @@ name: Build and Publish Python package to PyPI
 
 on:
   push:
+    tags:
+      - 'v*'
     branches:
-      - master
-  pull_request:
-    branches:
-      - master
+      - release/*
 
 jobs:
   build:
