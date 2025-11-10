@@ -2,6 +2,37 @@
 
 A Python-based RPC (Remote Procedure Call) framework for GDB (GNU Debugger) that enables programmatic control and automation of debugging sessions.
 
+**Table of Contents**
+
+---
+
+- [gdbrpc](#gdbrpc)
+    - [Overview](#overview)
+    - [Features](#features)
+    - [Installation](#installation)
+        - [From PyPI](#from-pypi)
+        - [From Source](#from-source)
+    - [Requirements](#requirements)
+    - [Quick Start](#quick-start)
+        - [Starting the GDB Server](#starting-the-gdb-server)
+        - [Using the Python Client](#using-the-python-client)
+        - [Using the Interactive CLI](#using-the-interactive-cli)
+    - [TODO](#todo)
+    - [Architecture](#architecture)
+        - [Components](#components)
+        - [Communication Flow](#communication-flow)
+    - [API Reference](#api-reference)
+        - [Client](#client)
+        - [Request Classes](#request-classes)
+    - [Configuration](#configuration)
+        - [Server Configuration](#server-configuration)
+        - [Client Configuration](#client-configuration)
+    - [Troubleshooting](#troubleshooting)
+    - [Contributing](#contributing)
+    - [License](#license)
+    - [Related Projects](#related-projects)
+    - [Support](#support)
+
 ## Overview
 
 `gdbrpc` provides a client-server architecture that allows you to control GDB instances remotely through a simple Python API. It's designed to be framework-agnostic and can be used with any GDB-compatible debugger, not limited to any specific operating system or embedded platform.
@@ -34,6 +65,10 @@ pip install -e .
 - Python >= 3.10
 - GDB with Python support
 - cloudpickle >= 0.0.0
+
+> [!NOTE]
+> The gdb version we developed and tested was the latest version of gdb and the gdb master branch.
+> However, some LTS GNU/Linux distributions use older versions of gdb, such as gdb 12, where the gdb.Thread API is not supported.
 
 ## Quick Start
 
@@ -127,8 +162,14 @@ cli.start()
 - Execute any GDB command interactively
 - Run shell commands with `!` prefix (e.g., `!ls`, `!pwd`)
 - Use Ctrl+C to send interrupt signal to target
-- Tab completion and command history (if readline is available)
-- Automatic reconnection handling
+
+## TODO
+
+- [ ] make the CLI provide the same experience as the gdb CLI
+    - [ ] auto-completion
+    - [ ] command history reading
+- [ ] improve network transmission
+    - [ ] improving security during deserialization
 
 ## Architecture
 
