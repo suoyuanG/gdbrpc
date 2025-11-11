@@ -1,5 +1,7 @@
 # gdbrpc
 
+🌐 **Languages**: [English](README.md) | [中文](README.zh-CN.md)
+
 A Python-based RPC (Remote Procedure Call) framework for GDB (GNU Debugger) that enables programmatic control and automation of debugging sessions.
 
 **Table of Contents**
