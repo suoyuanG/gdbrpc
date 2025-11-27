@@ -59,7 +59,11 @@ class AsyncExec:
 
 class Server:
     def __init__(
-        self, port: int = 20819, host: str = "localhost", logLevel=logging.INFO
+        self,
+        host: str = "localhost",
+        port: int = 20819,
+        logLevel=logging.INFO,
+        log_path=None,
     ):
         self.port = port
         self.host = host
@@ -73,14 +77,14 @@ class Server:
         if not self._logger.hasHandlers():
             self._logger.setLevel(logLevel)
 
-            timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-            pid = os.getpid()
-
             formatter = logging.Formatter("%(asctime)s gdbrpc_server: %(message)s")
 
-            file_handler = logging.FileHandler(
-                f"gdbrpc_server-{timestamp}-pid{pid}.log"
-            )
+            if log_path is None:
+                timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+                pid = os.getpid()
+                log_path = f"gdbrpc_server-{timestamp}-pid{pid}.log"
+
+            file_handler = logging.FileHandler(log_path)
             file_handler.setFormatter(formatter)
 
             terminal_handler = logging.StreamHandler()

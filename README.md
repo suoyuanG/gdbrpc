@@ -301,8 +301,8 @@ import gdbrpc
 
 # Start with debug logging
 gdbrpc.start_gdb_socket_server(
-    port=20819,
     host="0.0.0.0",  # Listen on all interfaces
+    port=20819,
     logLevel=logging.DEBUG
 )
 ```

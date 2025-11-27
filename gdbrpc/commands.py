@@ -45,7 +45,7 @@ def start_gdb_socket_server(
         )
         return
 
-    g_socket_server = Server(port, host, logLevel)
+    g_socket_server = Server(host, port, logLevel)
     g_socket_server.start()
 
 

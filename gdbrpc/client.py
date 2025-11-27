@@ -42,7 +42,13 @@ from gdbrpc.utils import (
 
 
 class Client:
-    def __init__(self, host="localhost", port=20819, logLevel=logging.INFO):
+    def __init__(
+        self,
+        host: str = "localhost",
+        port: int = 20819,
+        logLevel=logging.INFO,
+        log_path=None,
+    ):
         self._host = host
         self._port = port
         self._socket: socket.socket
@@ -53,9 +59,13 @@ class Client:
         self._logger = logging.getLogger(__name__)
         if not self._logger.hasHandlers():
             self._logger.setLevel(logLevel)
-            timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-            pid = os.getpid()
-            handler = logging.FileHandler(f"gdbrpc_client-{timestamp}-pid{pid}.log")
+
+            if log_path is None:
+                timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+                pid = os.getpid()
+                log_path = f"gdbrpc_client-{timestamp}-pid{pid}.log"
+
+            handler = logging.FileHandler(log_path)
             formatter = logging.Formatter("%(asctime)s gdbrpc_client: %(message)s")
             handler.setFormatter(formatter)
             self._logger.addHandler(handler)
