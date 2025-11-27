@@ -1,4 +1,6 @@
 name: Build and Publish Python package to PyPI
+permissions:
+  contents: read 
 
 on:
   push:
