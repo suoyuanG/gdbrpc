@@ -68,10 +68,6 @@ pip install -e .
 - GDB with Python support
 - cloudpickle >= 0.0.0
 
-> [!NOTE]
-> The gdb version we developed and tested was the latest version of gdb and the gdb master branch.
-> However, some LTS GNU/Linux distributions use older versions of gdb, such as gdb 12, where the gdb.Thread API is not supported.
-
 ## Quick Start
 
 ### Starting the GDB Server
