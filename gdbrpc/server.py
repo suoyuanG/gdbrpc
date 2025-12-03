@@ -42,6 +42,26 @@ from gdbrpc.utils import (
 )
 
 
+# Custom thread class for GDB compatibility
+# In newer GDB versions (>= 14.1), gdb.Thread is available as a subclass of threading.Thread
+# that automatically blocks signals. For older versions, we implement it ourselves.
+class GdbThread(threading.Thread):
+    """
+    A thread class that works seamlessly with GDB's signal handling requirements.
+    This is a drop-in replacement for gdb.Thread in newer GDB versions.
+    """
+
+    def start(self):
+        """Override start to block signals before starting the thread."""
+        # Check if gdb.blocked_signals is available (GDB >= 13.1)
+        if hasattr(gdb, "blocked_signals"):
+            with gdb.blocked_signals():
+                super().start()
+        else:
+            # Fall back to regular threading for older GDB versions
+            super().start()
+
+
 class AsyncExec:
     def __init__(self, request: Request):
         self.request: Request = request
@@ -69,7 +89,7 @@ class Server:
         self.host = host
         self.server: socket.socket
         self.running = False
-        self.accept_thread: Optional[gdb.Thread] = None
+        self.accept_thread: Optional[GdbThread] = None
         self.clients_lock = threading.Lock()
         self.clients: Dict[Tuple[str, int], socket.socket] = {}
 
@@ -120,7 +140,7 @@ class Server:
             gdb.post_event(set_pagination_off)
             self._logger.info("Set GDB pagination off")
 
-            self.accept_thread = gdb.Thread(target=self._accept, daemon=True)
+            self.accept_thread = GdbThread(target=self._accept, daemon=True)
             self.accept_thread.start()
 
         except Exception as e:
@@ -138,7 +158,7 @@ class Server:
                     f"Accepted connection from {address}, total clients: {len(self.clients)}"
                 )
 
-                gdb.Thread(
+                GdbThread(
                     target=self._process_requests,
                     args=(client, address),
                     daemon=True,
@@ -235,7 +255,7 @@ class Server:
                 self._logger.info(f"Received request from {address}: {request}")
                 assert isinstance(request, Request)
 
-                gdb.Thread(
+                GdbThread(
                     target=self._process_requests_core,
                     args=(client, request, status),
                     daemon=True,

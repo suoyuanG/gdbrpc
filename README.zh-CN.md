@@ -70,13 +70,6 @@ pip install -e .
 - GDB with Python support
 - cloudpickle >= 0.0.0
 
-> [!NOTE]
-> 开发和测试的 GDB 版本是 GDB stable 以及 GDB 的 master 分支，所以这两个版本的 GDB 大概率不会有什么大问题
->
-> 但是部分 GNU/Linux LTS 发行版提供的 gdb 并非 stable 分支
->
-> 比如 gdb 12，gdb 12 没有提供 gdb.Thread 这个 API，但 gdbrpc 使用了这个 API，所以 gdb 12 运行 gdbrpc 会报错
-
 ## Quick Start
 
 ### Starting the GDB Server
