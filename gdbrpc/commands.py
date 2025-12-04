@@ -135,6 +135,7 @@ class SocketServerStatus(gdb.Command):
         status = get_gdb_socket_server_status()
         memory = self.get_memory_usage()
 
+        print(f"gdbrpc version: {gdbrpc.__version__}")
         if status["running"]:
             print("Socket Server Status:")
             print("  Running: Yes")

@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools", "setuptools_scm", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "gdbrpc"
-version = "0.1.0"
+dynamic = ["version"]
 dependencies = ["cloudpickle>=0.0.0"]
 requires-python = ">=3.10"
 maintainers = [
@@ -23,6 +23,9 @@ classifiers = [
 
 [tool.setuptools]
 package-dir = { "gdbrpc" = "gdbrpc" }
+
+[tool.setuptools_scm]
+write_to = "gdbrpc/_version.py"
 
 [project.urls]
 Homepage = "https://github.com/suoyuanG/gdbrpc"
