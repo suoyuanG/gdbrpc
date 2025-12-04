@@ -13,12 +13,12 @@ maintainers = [
 ]
 description = "A Python RPC framework for controlling GDB remotely - enables programmatic debugging automation, remote command execution, and interactive CLI for any GDB-compatible debugger"
 readme = "README.md"
-license = { file = "LICENSE" }
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 keywords = ["gdb", "remote", "rpc", "debugger", "debugging", "automation", "NuttX", "embedded"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
-    "License :: OSI Approved :: Apache Software License",
 ]
 
 [tool.setuptools]
