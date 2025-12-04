@@ -34,7 +34,7 @@ g_socket_server: Server = None
 
 
 def start_gdb_socket_server(
-    port: int = 20819, host: str = "localhost", logLevel=logging.INFO
+    port: int = 20819, host: str = "localhost", log_level=logging.INFO
 ):
     """Start the GDB socket server"""
     global g_socket_server
@@ -45,7 +45,7 @@ def start_gdb_socket_server(
         )
         return
 
-    g_socket_server = Server(host, port, logLevel)
+    g_socket_server = Server(host, port, log_level)
     g_socket_server.start()
 
 
@@ -92,17 +92,17 @@ class StartSocketServer(gdb.Command):
         if not args:
             port = 20819
             host = "localhost"
-            logLevel = logging.INFO
+            log_level = logging.INFO
         else:
             try:
                 args = self.parser.parse_args(args)
                 port = args.port
                 host = args.host
-                logLevel = logging.DEBUG
+                log_level = logging.DEBUG
             except SystemExit:
                 return
 
-        start_gdb_socket_server(port, host, logLevel)
+        start_gdb_socket_server(port, host, log_level)
 
 
 class StopSocketServer(gdb.Command):

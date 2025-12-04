@@ -46,8 +46,8 @@ class Client:
         self,
         host: str = "localhost",
         port: int = 20819,
-        logLevel=logging.INFO,
-        log_path=None,
+        log_level: int = logging.INFO,
+        log_path: Optional[str] = None,
     ):
         self._host = host
         self._port = port
@@ -58,7 +58,7 @@ class Client:
 
         self._logger = logging.getLogger(__name__)
         if not self._logger.hasHandlers():
-            self._logger.setLevel(logLevel)
+            self._logger.setLevel(log_level)
 
             if log_path is None:
                 timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
