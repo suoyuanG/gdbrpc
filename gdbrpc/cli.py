@@ -28,7 +28,7 @@ from gdbrpc.utils import ShellExec
 
 class ClientCLI(Client):
     def __init__(self, host, port):
-        super().__init__(host, port, logLevel=logging.WARNING)
+        super().__init__(host, port, log_level=logging.WARNING)
 
     def _show_command_help(self):
         print("Welcome to the GDB Remote Protocol Client")
